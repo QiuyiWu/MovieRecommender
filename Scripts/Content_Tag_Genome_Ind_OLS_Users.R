@@ -40,6 +40,7 @@ load("../Data Structures/iso_points.rda")
 #then evaluate on the test set and record Absolute error as well as number of points
 cum_err = 0 #record cumulative absolute error
 num_pred = 0 #record number of predictions made
+avg_err = 0 #record the cumulative error from using user average as the guess
 for(i in 1:nrow(rat_mat)){
   #find the movies in the training set
   train_items = which(train_mat[i,] > 0)
@@ -50,6 +51,8 @@ for(i in 1:nrow(rat_mat)){
   #run a OLS linear model
   model = lm(y ~ x$Dim1 + x$Dim2 + x$Dim3)
   
+  avg = mean(y)
+  
   #find the test items for the user
   test_items = which(test_mat[i,]>0)
   #find the ratings
@@ -59,6 +62,7 @@ for(i in 1:nrow(rat_mat)){
   
   #update cumulative absolute error and number of predictions
   cum_err = cum_err + sum(abs(y - predict(model, x)))
+  avg_err = avg_err + sum(abs(y - avg))
   num_pred = num_pred + length(y)
   
   print(i/nrow(rat_mat))
@@ -66,3 +70,4 @@ for(i in 1:nrow(rat_mat)){
 
 MAE = cum_err/num_pred
 MAE
+avg_err/num_pred
