@@ -38,24 +38,47 @@ for(i in 1:ncol(train_mat)){
 #make predictions on test set
 num_pred = 0
 cum_err = 0
-num_empty = 0
+avg_err = 0
+user_err = 0 
+item_err = 0
 for(i in 1:nrow(test_mat)){
-  for(j in 1:nrow(test_mat)){
+  for(j in 1:ncol(test_mat)){
     
     #if there is a rating for this user-item pair
     if(test_mat[i,j] > 0){
       #iterate number of predictions counter
       num_pred = num_pred + 1
       
-      #find the ratings prediction from similar users that have rated the movie
+      #find the ratings prediction from average, user, item effects
       prediction = avg + user_mean[i] + item_mean[j]
       
       #find the cumulative absolute error
-      cum_err = cum_err + test_mat[i,j] - prediction
+      cum_err = cum_err + abs(test_mat[i,j] - prediction)
+      
+      #find the ratings prediction from average
+      prediction = avg 
+      
+      #find the cumulative absolute error
+      avg_err = avg_err + abs(test_mat[i,j] - prediction)
+      
+      #find the ratings prediction from average plus user effects
+      prediction = avg + user_mean[i]
+      
+      #find the cumulative absolute error
+      user_err = user_err + abs(test_mat[i,j] - prediction)
+      
+      #find the ratings prediction from average plus item effects
+      prediction = avg + item_mean[j]
+      
+      #find the cumulative absolute error
+      item_err = item_err + abs(test_mat[i,j] - prediction)
     }
     
   }
 }
 #find the mean absolute error
 MAE = cum_err/num_pred
-percent_empty = num_empty/num_pred
+MAE
+avg_err/num_pred
+user_err/num_pred
+item_err/num_pred

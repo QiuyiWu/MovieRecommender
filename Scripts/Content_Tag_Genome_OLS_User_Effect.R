@@ -35,38 +35,47 @@ load("../Data Structures/tag_mat.rda")
 #load the iso object
 load("../Data Structures/iso_points.rda")
 
-
-#train OLS linear models on the training set with iso coords as covariates
-#then evaluate on the test set and record Absolute error as well as number of points
-cum_err = 0 #record cumulative absolute error
-num_pred = 0 #record number of predictions made
-avg_err = 0 #record the cumulative error from using user average as the guess
-for(i in 1:nrow(rat_mat)){
-  #find the movies in the training set
-  train_items = which(train_mat[i,] > 0)
-  #find the rating data
-  y = train_mat[i,train_items]
-  #find the covariate data
-  x = data.frame(X[train_items,])
-  #run a OLS linear model
-  model = lm(y ~ x$Dim1 + x$Dim2 + x$Dim3)
+#make dataframe for training set
+response = NULL
+users = NULL
+x = NULL
+for(i in 1:nrow(train_mat)){
+  #find which items this user has rated
+  train_items = which(train_mat[i,]>0)
   
-  avg = mean(y)
+  #record ratings of rated items
+  response = c(response,train_mat[i,train_items])
   
-  #find the test items for the user
-  test_items = which(test_mat[i,]>0)
-  #find the ratings
-  y = test_mat[i,test_items]
-  #predict on new values
-  x = data.frame(X[test_items,])
+  #make predictor variable for users
+  users = c(users,rep(i,length(train_items)))
   
-  #update cumulative absolute error and number of predictions
-  cum_err = cum_err + sum(abs(y - predict(model, x)))
-  avg_err = avg_err + sum(abs(y - avg))
-  num_pred = num_pred + length(y)
-  
+  #make predictor variables for isomap
+  x = rbind(x,X[train_items,])
 }
+df = data.frame(response,as.factor(users),x)
 
-MAE = cum_err/num_pred
-MAE
-avg_err/num_pred
+model = lm(response ~., data = df)
+summary(model)
+
+#make dataframe for test set
+response = NULL
+users = NULL
+x = NULL
+for(i in 1:nrow(test_mat)){
+  #find which items this user has rated
+  test_items = which(test_mat[i,]>0)
+  
+  #record ratings of rated items
+  response = c(response,test_mat[i,test_items])
+  
+  #make predictor variable for users
+  users = c(users,rep(i,length(test_items)))
+  
+  #make predictor variables for isomap
+  x = rbind(x,X[test_items,])
+}
+df = data.frame(response,as.factor(users),x)
+
+test_pred = predict(model,df)
+
+mean(abs(response-test_pred))
