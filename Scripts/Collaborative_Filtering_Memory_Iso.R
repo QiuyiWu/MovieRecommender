@@ -44,7 +44,7 @@ k = 25
 #find k nearest neighbors of each user
 nn = matrix(0,nrow = num_user,ncol = k)
 for(i in 1:nrow(nn)){
-  temp = order(sim_mat[i,],decreasing = FALSE)
+  temp = order(dist_mat[i,],decreasing = FALSE)
   nn[i,] = temp[1:k]
 }
 
