@@ -10,7 +10,7 @@ load("tag_mat.rda")
 tag_dist = dist(tag_mat)
 save(tag_dist,file = "tag_dist.rda")
 #do isomap on the tag data
-L = isomap(tag_dist, ndim=20, k=5)
+L = isomap(tag_dist, ndim=3, k=5)
 X = L$points
 #save
 save(L,file = "iso.rda")

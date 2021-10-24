@@ -50,8 +50,8 @@ rm(dist_mat)
 
 #define hyperparameter values
 l = 0.01*1:100
-tau = 0.001*1:100
-sigma = 0.01*90:110
+tau = 0.005*1:200
+sigma = 0.005*1:200
 
 #construct a matrix where each combination is one row
 hyper = matrix(0,nrow = length(l)*length(tau)*length(sigma),ncol = 3)
