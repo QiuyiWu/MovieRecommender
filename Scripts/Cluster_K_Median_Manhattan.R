@@ -42,7 +42,7 @@ plot(clusters,WCMD[clusters-1],type="l")
 #there might be an elbow around 10-15?
 
 #run at elbow
-out = pam(cluster_mat,15,metric = "manhattan")
+out = pam(cluster_mat,5,metric = "manhattan")
 #recover cluster ids
 clust_id = out$clustering
 table(clust_id)
@@ -55,6 +55,7 @@ for(i in 1:max(clust_id)){
   clusters[[i]] = cluster_mat[which(clust_id == i),]
 }
 
+#recover movie names
 mov = read.csv("../../Data/movies.csv")
 
 #find the top movies in each cluster
