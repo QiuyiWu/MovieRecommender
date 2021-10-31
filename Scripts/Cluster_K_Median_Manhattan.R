@@ -8,7 +8,7 @@ library(factoextra)
 load("../Data Structures/cluster_mat.rda")
 
 #find within sum of squares for a varying number of clusters
-clusters = 2*2:25 #the number of clusters to attempt
+clusters = 2:25 #the number of clusters to attempt
 WCMD = rep(0,length(clusters)) #The within cluster manhattan distance
 for(k in clusters){
   #run the k-medians algorithm
@@ -38,7 +38,10 @@ for(k in clusters){
 
 
 #plot the WSS curve
-plot(clusters,WCMD[clusters-1],type="l")
+plot(clusters,WCMD[],type="l",
+     xlab = "Number of Clusters",
+     ylab = "WCAE",
+     main = "k-medians")
 #there might be an elbow around 10-15?
 
 #run at elbow
@@ -69,7 +72,7 @@ for(i in 1:length(clusters)){
   mov_id_str = names(temp)
   mov_id = strtoi(mov_id_str)
   #subset to top 5 movies in each cluster
-  mov_id = mov_id[1:10]
+  mov_id = mov_id[1:5]
   
   names = NULL
   for(j in 1:length(mov_id)){

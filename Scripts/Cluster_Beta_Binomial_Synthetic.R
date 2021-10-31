@@ -8,11 +8,11 @@ set.seed(1)
 #################
 
 #Set the number of clusters
-K = 2
+K = 4
 #set the number of users
 N = 1000
 #Set th enumber o fitems
-M = 2000
+M = 10000
 
 #set alpha
 alpha = 1
@@ -185,8 +185,11 @@ post_phi_k = apply(chain_phi_ik,2,mean)
 matplot(chain_phi_ik,type="l")
 abline(h = true_phi_k[1])
 abline(h = true_phi_k[2])
-#posterior mean vs truth
-plot(true_phi_k,post_phi_k)
+abline(h = true_phi_k[3])
+abline(h = true_phi_k[4])
+
+# #posterior mean vs truth
+# plot(true_phi_k,post_phi_k)
 
 
 #posterior mean for z
@@ -196,7 +199,7 @@ for(n in 1:N){
     post_z_uk[n,k] = length(which(chain_z_iu[,n]==k))/length(chain_z_iu[,n])
   }
 }
-plot(true_z_u,post_z_uk[,1])
+# plot(true_z_u,post_z_uk[,1])
 
 #posterior mean for p
 post_p_km = matrix(0,nrow = K, ncol = M)
@@ -207,3 +210,7 @@ for(k in 1:K){
 }
 plot(true_p_km[1,],post_p_km[2,])
 points(true_p_km[2,],post_p_km[1,])
+points(true_p_km[3,],post_p_km[4,])
+points(true_p_km[4,],post_p_km[3,])
+
+
