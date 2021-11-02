@@ -68,7 +68,7 @@ for(i in 1:nrow(test_mat)){
       }
       
       #find the cumulative absolute error
-      cum_err = cum_err + test_mat[i,j] - pred[i,j]
+      cum_err = cum_err + abs(test_mat[i,j] - pred[i,j])
     }
     
   }

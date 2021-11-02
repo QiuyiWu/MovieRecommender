@@ -22,7 +22,7 @@ test_mat = rat_mat[,test_items]
 space_dist = dist(train_mat)
 #apply isomap, setting number of dimensions to 3
 library(vegan)
-L = isomap(space_dist, ndim=50, k=25)
+L = isomap(space_dist, ndim = 50, k=25)
 plot(L)
 #find the coordinates of points in reduced space
 coord = L$points 
