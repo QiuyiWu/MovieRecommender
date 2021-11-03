@@ -8,7 +8,7 @@ set.seed(1)
 #######################
 
 #Set the number of clusters
-K = 4
+K = 5
 #set alpha
 alpha = 1
 #set a
