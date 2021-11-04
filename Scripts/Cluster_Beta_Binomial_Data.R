@@ -151,3 +151,8 @@ for(it in 1:n_it){
   print(it)
   
 }
+
+BBMM_out = list(Chain_phi = chain_phi_ik,
+                Chain_z = chain_z_iu,
+                Chain_p = chain_p_ikm)
+save(BBMM_out, file = "../Data Structures/BBMM_out.rda")
