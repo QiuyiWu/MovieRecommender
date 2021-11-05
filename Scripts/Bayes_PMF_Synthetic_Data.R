@@ -21,7 +21,7 @@ rm(cluster_mat)
 
 
 #set D
-D = 2
+D = 5
 
 #set hyperparameters
 mu_u0 = mu_v0 = rep(0,D)
@@ -37,7 +37,7 @@ alpha = 2
 ##############
 
 #draw Lambda_U
-true_Lambda_U = rWishart(1,2*v_0,W_0)
+true_Lambda_U = rWishart(1,v_0,W_0)
 true_Lambda_U = true_Lambda_U[,,1]
 true_Lambda_U_inv = solve(true_Lambda_U)
 #draw mu_u
@@ -55,7 +55,7 @@ for(i in 1:nrow(true_U)){
 ##############
 
 #draw Lambda_V
-true_Lambda_V = rWishart(1,2*v_0,W_0)
+true_Lambda_V = rWishart(1,v_0,W_0)
 true_Lambda_V = true_Lambda_V[,,1]
 true_Lambda_V_inv = solve(true_Lambda_V)
 #draw mu_v
@@ -79,6 +79,7 @@ for(i in 1:N){
   for(j in 1:M){
     if( (I_nm[i,j]>0) == TRUE){
       R_nm[i,j] = 1/alpha * rnorm(1) + sum(true_U[i,] * true_V[j,])
+      # R_nm[i,j] =  sum(true_U[i,] * true_V[j,]) #equal to expectation
     }
   }
 }
@@ -226,12 +227,12 @@ for(it in 1:n_it){
   W_0_star_inv = W_0_inv + M*S + beta_0*M/beta_star * (mu_u0 - V_mean) %*% t((mu_u0 - V_mean))
   W_0_star = solve(W_0_star_inv)
 
-  #draw Lambda_U first
+  #draw Lambda_V first
   Lambda_V = rWishart(1,v_star,W_0)
   Lambda_V = Lambda_V[,,1]
   Lambda_V_inv = solve(Lambda_V)
 
-  #initiailze mu_u at random
+  #initiailze mu_v at random
   mu_v = chol(1/beta_star*Lambda_V_inv) %*% rnorm(D) + avg
   
   #####
@@ -338,7 +339,7 @@ post_R_nm = matrix(0,nrow = N, ncol = M)
 for(i in 1:N){
   for(j in 1:M){
     if( (I_nm[i,j]>0) == TRUE){
-      post_R_nm[i,j] = sum(true_U[i,] * post_V_md[j,])
+      post_R_nm[i,j] = sum(post_U_nd[i,] * post_V_md[j,])
     }
   }
 }
