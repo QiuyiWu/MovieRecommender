@@ -33,7 +33,7 @@ test_I_nm = test_R_nm
 test_I_nm[which(test_I_nm>0)] = 1
 
 #save files
-save(train_R_nm,file = "../Data Structures/train_mat.rda")
-save(test_R_nm,file = "../Data Structures/test_mat.rda")
+save(train_R_nm,file = "../Data Structures/train_R_nm.rda")
+save(test_R_nm,file = "../Data Structures/test_R_nm.rda")
 save(train_I_nm, file = "../Data Structures/train_I_nm.rda")
 save(test_I_nm, file = "../Data Structures/test_I_nm.rda")
