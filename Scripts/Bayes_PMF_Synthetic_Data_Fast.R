@@ -93,7 +93,6 @@ for(n in 1:N){
   }
 }
 
-
 ##############
 # Initialize #
 ##############
@@ -160,7 +159,7 @@ chain_V_imd = array(0,dim=c(iterations,M,D))
 #Lets do the parameters independently first
 
 for(it in 1:n_it){
-  
+
   #####################
   # mu_u and Lambda_u #
   #####################
@@ -215,7 +214,7 @@ for(it in 1:n_it){
     #draw U_n
     U[n,] = chol(covar_inv) %*% rnorm(D) + avg
   }
-  
+
   #####################
   # mu_v and Lambda_v #
   #####################
@@ -269,32 +268,32 @@ for(it in 1:n_it){
     #draw V_m
     V[m,] = chol(covar_inv) %*% rnorm(D) + avg
   }
-  
+
   ##########
   # Record #
   ##########
-  
+
   #record the sampled values
   if(it>warmup){
     #record mu_u
     chain_mu_u_id[it - warmup,] = mu_u
-    
+
     chain_lambda_u_idd[it - warmup,,] = Lambda_U
-    
+
     #record U
     chain_U_ind[it - warmup,,] = U
-    
+
     #record mu_v
     chain_mu_v_id[it - warmup,] = mu_v
-    
+
     chain_lambda_v_idd[it - warmup,,] = Lambda_V
-    
+
     # record V
     chain_V_imd[it - warmup,,] = V
   }
-  
+
   print(it)
-  
+
 }
 
 ######################
