@@ -3,30 +3,33 @@
 library(stats)
 set.seed(1)
 
-###########################
-# Collaborative Filtering #
-###########################
-
 #load a ratings matrix
 load("../Data Structures/rat_mat.rda")
 #recover the number of users and items
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)
 
-#divide data into training and test set
-train_items = sample(1:num_item,round(num_item/2))
-test_items = 1:num_item
-test_items = test_items[-train_items]
-train_mat = rat_mat[,train_items]
-test_mat = rat_mat[,test_items]
+#load training and test sets
+load("../Data Structures/train_R_nm.rda")
+load("../Data Structures/test_R_nm.rda")
+#rename so it works with old code
+train_mat = train_R_nm
+test_mat = test_R_nm
+#remove old data structures
+rm(train_R_nm)
+rm(test_R_nm)
 
 #define a similarity function - here cosine similarity
 sim = function(a,b){
   return(sum(a*b)/(sqrt(sum(a^2))*sqrt(sum(b^2))))
 }
 
-#load the cluster matrix
-load("../Data Structures/cluster_mat.rda")
+#load the training cluster matrix
+load("../Data Structures/train_I_nm.rda")
+#rename so it works with old code
+cluster_mat = train_I_nm
+#remove redundant data structures
+rm(train_I_nm)
 
 #run the k-means algorithm for k = 2
 K = 2
@@ -131,3 +134,7 @@ for(i in 1:nrow(test_mat)){
 #find the mean absolute error
 MAE = cum_err/num_pred
 percent_empty = num_empty/num_pred
+
+save(MAE,file = "../Data Structures/K_means_CF_MAE.rda")
+
+

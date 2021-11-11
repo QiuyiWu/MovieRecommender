@@ -9,12 +9,15 @@ load("../Data Structures/rat_mat.rda")
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)
 
-#divide data into training and test set
-train_items = sample(1:num_item,round(num_item/2))
-test_items = 1:num_item
-test_items = test_items[-train_items]
-train_mat = rat_mat[,train_items]
-test_mat = rat_mat[,test_items]
+#load training and test sets
+load("../Data Structures/train_R_nm.rda")
+load("../Data Structures/test_R_nm.rda")
+#rename so it works with old code
+train_mat = train_R_nm
+test_mat = test_R_nm
+#remove old data structures
+rm(train_R_nm)
+rm(test_R_nm)
 
 #define a similarity function - here cosine similarity
 sim = function(a,b){
@@ -49,6 +52,21 @@ pred = matrix(0,nrow = nrow(test_mat),ncol = ncol(test_mat))
 num_pred = 0
 cum_err = 0
 num_empty = 0
+#find global average for impuration
+glob_avg = mean(train_mat[train_mat>0])
+#find user average for imputation
+user_avg = rep(0,num_user)
+for(n in 1:num_user){
+  user_avg[n] = mean(train_mat[n,train_mat[n,]>0])
+}
+#find item average for imputaiton
+item_avg = rep(0,num_item)
+for(m in 1:num_item){
+  item_avg[m] = mean(train_mat[train_mat[,m]>0,m])
+}
+#some items are NaN - not present in training set - 1959!
+sum(is.nan(item_avg))
+
 for(i in 1:nrow(test_mat)){
   for(j in 1:nrow(test_mat)){
     
@@ -62,9 +80,11 @@ for(i in 1:nrow(test_mat)){
       prediction = prediction[which(prediction > 0)]
       if(length(prediction>0)){ #count only those users that have rated the movie
         pred[i,j] = mean(prediction)
-      } else { #if no similar users rated the movie, use the average item rating
+      } else { #if no similar users rated the movie, use the average rating from the training set
         num_empty = num_empty + 1
-        pred[i,j] = mean(test_mat[which(test_mat[,j]>0),j])
+        # pred[i,j] = item_avg[j] #item mean
+        # pred[i,j] = user_avg[i] #user mean
+        pred[i,j] = glob_avg
       }
       
       #find the cumulative absolute error
@@ -76,3 +96,10 @@ for(i in 1:nrow(test_mat)){
 #find the mean absolute error
 MAE = cum_err/num_pred
 percent_empty = num_empty/num_pred
+
+#if we dont do imputation for empty predictions then MAE is 3.167...bad method
+#impute for item mean: NaN because some items don't appear in the training set?
+#if we imput for user mean then we have 0.9543072
+#if we use the global mean then the MAE is 0.953949 - probably recommend this?
+
+save(MAE,file = "../Data Structures/CF_MAE.rda")
