@@ -107,6 +107,24 @@ pred = matrix(0,nrow = nrow(test_mat),ncol = ncol(test_mat))
 num_pred = 0
 cum_err = 0
 num_empty = 0
+
+#find user average for imputation
+user_avg = rep(0,num_user)
+for(n in 1:num_user){
+  user_avg[n] = mean(train_mat[n,train_mat[n,]>0])
+}
+
+#find global average
+glob_avg = mean(train_mat[train_mat>0])
+
+#find cluster-speciic  average
+clust_avg = rep(0,K)
+for(k in 1:K){
+  clust_mat = train_mat[clust_id ==k,]
+  clust_avg[k] = mean(clust_mat[clust_mat>0])
+}
+
+
 for(i in 1:nrow(test_mat)){
   for(j in 1:nrow(test_mat)){
     
@@ -122,7 +140,14 @@ for(i in 1:nrow(test_mat)){
         pred[i,j] = mean(prediction)
       } else { #if no similar users rated the movie, use the average item rating
         num_empty = num_empty + 1
-        pred[i,j] = mean(test_mat[which(test_mat[,j]>0),j])
+        # #use user-specific average
+        # pred[i,j] = user_avg[i]
+        
+        # #use globabl average
+        # pred[i,j] = glob_avg
+        
+        #use cluster-specific average
+        pred[i,j] = clust_avg[clust_id[i]]
       }
       
       #find the cumulative absolute error
@@ -134,7 +159,10 @@ for(i in 1:nrow(test_mat)){
 #find the mean absolute error
 MAE = cum_err/num_pred
 percent_empty = num_empty/num_pred
+#percent empty is lower - might account for most of the difference?
+
+#user-average MAE is 0.9276359
+#global-average MAE is 0.926458
+#cluster-average MAE is 0.9260715- use this one?
 
 save(MAE,file = "../Data Structures/K_means_CF_MAE.rda")
-
-
