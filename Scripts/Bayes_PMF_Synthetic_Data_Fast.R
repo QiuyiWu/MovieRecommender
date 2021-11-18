@@ -5,12 +5,12 @@ library(stats)
 set.seed(1)
 
 #load cluster_mat
-load("../Data Structures/cluster_mat.rda")
+# load("../Data Structures/cluster_mat.rda")
 
 #rename to indicator functions
-I_nm = cluster_mat[,] #subset for time...
+# I_nm = cluster_mat[,] #subset for time...
 #make new indicator matrix that is full, to eliminate effects of empty data
-# I_nm = matrix(1,nrow = 200, ncol = 200)
+I_nm = matrix(1,nrow = 200, ncol = 200)
 
 # recover number of users N and number of items M
 N= nrow(I_nm)
@@ -90,6 +90,7 @@ count = 0
 for(n in 1:N){
   for(m in user_rated_n[[n]]){
     R_nm[n,m] = 1/alpha * rnorm(1) + sum(true_U[n,] * true_V[m,])
+    # R_nm[n,m] = sum(true_U[n,] * true_V[m,])
   }
 }
 
@@ -156,6 +157,9 @@ chain_V_imd = array(0,dim=c(iterations,M,D))
 # Gibbs Sampler #
 #################
 
+#lets try something
+mean_rating = mean(R_nm[which(I_nm>0)])
+
 #Lets do the parameters independently first
 
 for(it in 1:n_it){
@@ -202,7 +206,8 @@ for(it in 1:n_it){
 
     s = rep(0,D)
     for(m in user_rated_n[[n]]){
-      s = s + V[m,]*R_nm[n,m]
+      # s = s + V[m,]*(R_nm[n,m])
+      s = s + V[m,]*(R_nm[n,m]-mean_rating)
     }
     #maybe I should rename them becaue S and s are similar..
 
@@ -256,7 +261,8 @@ for(it in 1:n_it){
 
     s = rep(0,D)
     for(n in item_rated_m[[m]]){
-      s = s + U[n,]*R_nm[n,m]
+      # s = s + U[n,]*(R_nm[n,m])
+      s = s + U[n,]*(R_nm[n,m]-mean_rating)
     }
     #maybe I should rename them becaue S and s are similar..
 
@@ -370,5 +376,19 @@ for(n in 1:N){
 }
 R_nm = R_nm[which(I_nm>0)]
 post_R_nm = post_R_nm[which(I_nm>0)]
+post_R_nm = post_R_nm + mean_rating
 plot(R_nm[], post_R_nm[])
-# # plot(R_nm[which(I_nm>0)], post_R_nm[which(I_nm>0)])
+# plot(R_nm[which(I_nm>0)], post_R_nm[which(I_nm>0)])
+
+MAE = mean(abs(post_R_nm - R_nm))
+rMSE = sqrt(mean((post_R_nm-R_nm)^2))
+
+#even in synthetic data, mu_u -> 0 while mu_v explodes?
+#why does this happen?
+
+#fixing mu_u and lambda_u and mu_v and lambda_v results in MAE and rMSE about the same as fixing U and V
+#different estimates for U and V, however
+
+#changed code to subtract out mean, then add in later.  now the V's are small while the U's are large and (possibl) diverging
+#needs more testing
+#similar ish MAE and rMSE

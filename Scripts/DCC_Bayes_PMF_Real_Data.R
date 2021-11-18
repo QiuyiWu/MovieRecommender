@@ -57,7 +57,6 @@ Lambda_U = rWishart(1,v_0,W_0)
 Lambda_U = Lambda_U[,,1]
 Lambda_U_inv = solve(Lambda_U)
 
-
 #initiailze mu_u at random
 mu_u = rnorm(D)
 
@@ -82,7 +81,7 @@ for(i in 1:nrow(V)){
 }
 
 #set number of iterations
-warmup = 2000
+warmup = 3000
 iterations = 1000
 n_it = warmup + iterations
 
@@ -97,6 +96,9 @@ chain_V_imd = array(0,dim=c(iterations,M,D))
 #################
 # Gibbs Sampler #
 #################
+
+#lets try something
+mean_rating = mean(R_nm[which(I_nm>0)])
 
 #Lets do the parameters independently first
 
@@ -144,7 +146,7 @@ for(it in 1:n_it){
     
     s = rep(0,D)
     for(m in user_rated_n[[n]]){
-      s = s + V[m,]*R_nm[n,m]
+      s = s + V[m,]*(R_nm[n,m] - mean_rating)
     }
     #maybe I should rename them becaue S and s are similar..
     
@@ -198,7 +200,7 @@ for(it in 1:n_it){
     
     s = rep(0,D)
     for(n in item_rated_m[[m]]){
-      s = s + U[n,]*R_nm[n,m]
+      s = s + U[n,]*(R_nm[n,m] - mean_rating)
     }
     #maybe I should rename them becaue S and s are similar..
     
@@ -289,7 +291,7 @@ matplot(chain_V_imd[,m,],type="l")
 post_R_nm = matrix(0,nrow = N, ncol = M)
 for(n in 1:N){
   for(m in user_rated_n[[n]]){
-    post_R_nm[n,m] = sum(post_U_nd[n,] * post_V_md[m,])
+    post_R_nm[n,m] = sum(post_U_nd[n,] * post_V_md[m,]) + mean_rating
     # post_R_nm[n,m] = sum(true_U[n,] * true_V[m,])
   }
 }
@@ -333,7 +335,7 @@ for(m in 1:M){
 post_R_nm = matrix(0,nrow = N, ncol = M)
 for(n in 1:N){
   for(m in user_rated_n[[n]]){
-    post_R_nm[n,m] = sum(post_U_nd[n,] * post_V_md[m,])
+    post_R_nm[n,m] = sum(post_U_nd[n,] * post_V_md[m,])  + mean_rating
   }
 }
 R_nm = R_nm[which(I_nm>0)]
@@ -342,9 +344,20 @@ plot(R_nm[], post_R_nm[])
 
 MAE = mean(abs(post_R_nm - R_nm))
 MAE #this is 3.9435...
+rMSE = sqrt(mean((post_R_nm - R_nm)^2))
 #also, for D = 2 we have mu_u => 0 while mu_v explodes
 #somethigns not right here....
 
 save(MAE,file = paste("MAE_D_",toString(D),".rda",sep=""))
+save(rMSE,file = paste("rMSE_D_",toString(D),".rda",sep=""))
 save(post_U_nd,file = paste("Post_U_D_",toString(D),".rda",sep=""))
 save(post_V_md,file = paste("Post_V_D_",toString(D),".rda",sep=""))
+
+#it seems like the trend is that most of u is zero, and v has one component which, when multiplied against u,
+#results in a value close to the average
+#variation happens due to variation in other 
+
+
+#the paper has different results than I do in terms of finding latent vectors - is there a bug somewhere?
+#well teh overall trend is the same - one is small and one is large - 
+#but their large is [-20,20] and their small is [-0.2,0.2] instead of what I have
