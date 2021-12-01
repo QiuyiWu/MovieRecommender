@@ -132,27 +132,27 @@ for(it in 1:n_it){
   #####
   # U #
   #####
-  
+
   for(n in 1:N){
-    
+
     #find sufficient stats
     S = matrix(0,nrow = D, ncol = D)
-    
+
     for(m in user_rated_n[[n]]){
       S = S + V[m,] %*% t(V[m,])
     }
-    
+
     s = rep(0,D)
     for(m in user_rated_n[[n]]){
       s = s + V[m,]*R_nm[n,m]
     }
     #maybe I should rename them becaue S and s are similar..
-    
+
     #find variance and mean for normal
     covar = Lambda_U + alpha*S
     covar_inv = solve(covar)
     avg = covar_inv%*%(alpha*s + Lambda_U %*% mu_u )
-    
+
     #draw U_n
     U[n,] = chol(covar_inv) %*% rnorm(D) + avg
   }
@@ -187,26 +187,26 @@ for(it in 1:n_it){
   #####
   # V #
   #####
-  
+
   for(m in 1:M){
-    
+
     #find sufficient stats
     S = matrix(0,nrow = D, ncol = D)
     for(n in item_rated_m[[m]]){
       S = S + U[n,] %*% t(U[n,])
     }
-    
+
     s = rep(0,D)
     for(n in item_rated_m[[m]]){
       s = s + U[n,]*R_nm[n,m]
     }
     #maybe I should rename them becaue S and s are similar..
-    
+
     #find variance and mean for normal
     covar = Lambda_V + alpha*S
     covar_inv = solve(covar)
     avg = covar_inv%*%(alpha*s + Lambda_V %*% mu_v )
-    
+
     #draw V_m
     V[m,] = chol(covar_inv) %*% rnorm(D) + avg
   }

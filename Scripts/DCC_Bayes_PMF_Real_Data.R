@@ -99,6 +99,7 @@ chain_V_imd = array(0,dim=c(iterations,M,D))
 
 #lets try something
 mean_rating = mean(R_nm[which(I_nm>0)])
+  # median(R_nm[which(I_nm>0)]) #oops, all medians
 
 #Lets do the parameters independently first
 
