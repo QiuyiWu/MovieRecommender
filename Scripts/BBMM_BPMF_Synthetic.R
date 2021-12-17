@@ -199,7 +199,7 @@ V_kmd = true_V_kmd
 
 #set number of iterations
 warmup = 10
-iterations = 1000
+iterations = 10
 n_it = warmup + iterations
 
 #make chains
@@ -228,69 +228,69 @@ chain_V_k_imd[[K+1]] = NULL
 
 for(it in 1:n_it){
   
-  # #######
-  # # phi #
-  # #######
-  # 
-  # #sample phi from its full conditional
-  # for(k in 1:K){
-  #   phi_k[k] = rgamma(1,num_clust_k[k]+alpha,1)
-  # }
-  # phi_k = phi_k/sum(phi_k)
-  # 
-  # #######
-  # # z_n #
-  # #######
-  # 
-  # #for each user
-  # for(n in 1:N){
-  # 
-  #   #de-increment num_cluster
-  #   num_clust_k[z_n[n]] = num_clust_k[z_n[n]] - 1
-  # 
-  #   #define a probability vector for the full conditional
-  #   probs = rep(0,K)
-  # 
-  #   for(k in 1:K){ #for each cluster
-  #     probs[k] = sum(I_nm[n,]*log(p_km[k,])) + sum((1-I_nm[n,])*log(1-p_km[k,])) + log(phi_k[k])
-  #     for(m in user_rated_n[[n]]){
-  #       probs[k] = probs[k] - 1/2*((R_nm[n,m] - sum(true_U_knd[k,n,]*true_V_kmd[k,m,]))/alpha)^2
-  #     }
-  #   }
-  # 
-  #   #convert from log-scale to normal scale
-  #   probs = exp(probs - max(probs))/sum(exp(probs - max(probs)))
-  # 
-  #   #correct for numerical instability?
-  #   probs[probs < 0.00001] = 0.00001
-  #   probs[probs > 0.99999] = 0.99999
-  # 
-  #   #sample from the mulitinomal full conditional
-  #   z_n[n] = sample(1:K,1,prob = probs)
-  # 
-  #   #re-increment num_cluster
-  #   num_clust_k[z_n[n]] = num_clust_k[z_n[n]] + 1
-  # 
-  # }
-  # 
-  # clust_map[,2] = z_n
-  # #compute cluster ID
-  # for(k in 1:K){
-  #   clust_map[which(z_n == k),3] = 1:length(which(z_n==k))
-  # }
-  # #####
-  # # p #
-  # #####
-  # 
-  # #sample p from its full conditional
-  # for(k in 1:K){ #for each topic
-  #   for(m in 1:M){ #for each item
-  #     users = which(z_n == k)
-  #     u_count = num_clust_k[k]
-  #     y_count = sum(I_nm[users,m])
-  #     p_km[k,m] = rbeta(1,a + y_count,b + u_count - y_count)
-  #   }
-  # }
+  #######
+  # phi #
+  #######
+  
+  #sample phi from its full conditional
+  for(k in 1:K){
+    phi_k[k] = rgamma(1,num_clust_k[k]+alpha,1)
+  }
+  phi_k = phi_k/sum(phi_k)
+  
+  #######
+  # z_n #
+  #######
+  
+  #for each user
+  for(n in 1:N){
+    
+    #de-increment num_cluster
+    num_clust_k[z_n[n]] = num_clust_k[z_n[n]] - 1
+    
+    #define a probability vector for the full conditional
+    probs = rep(0,K)
+    
+    for(k in 1:K){ #for each cluster
+      probs[k] = sum(I_nm[n,]*log(p_km[k,])) + sum((1-I_nm[n,])*log(1-p_km[k,])) + log(phi_k[k])
+      for(m in user_rated_n[[n]]){
+        probs[k] = probs[k] - 1/2*((R_nm[n,m] - sum(U_knd[k,n,]*V_kmd[k,m,]))/alpha)^2
+      }
+    }
+    
+    #convert from log-scale to normal scale
+    probs = exp(probs - max(probs))/sum(exp(probs - max(probs)))
+    
+    #correct for numerical instability?
+    probs[probs < 0.00001] = 0.00001
+    probs[probs > 0.99999] = 0.99999
+    
+    #sample from the mulitinomal full conditional
+    z_n[n] = sample(1:K,1,prob = probs)
+    
+    #re-increment num_cluster
+    num_clust_k[z_n[n]] = num_clust_k[z_n[n]] + 1
+    
+  }
+  
+  clust_map[,2] = z_n
+  #compute cluster ID
+  for(k in 1:K){
+    clust_map[which(z_n == k),3] = 1:length(which(z_n==k))
+  }
+  #####
+  # p #
+  #####
+  
+  #sample p from its full conditional
+  for(k in 1:K){ #for each topic
+    for(m in 1:M){ #for each item
+      users = which(z_n == k)
+      u_count = num_clust_k[k]
+      y_count = sum(I_nm[users,m])
+      p_km[k,m] = rbeta(1,a + y_count,b + u_count - y_count)
+    }
+  }
   
   #cycle through clusters
   for(k in 1:K){
@@ -320,121 +320,118 @@ for(it in 1:n_it){
     for(user in 1:length(users)){
       clust_user_rated_n[[user]] = user_rated_n[[users[user]]]
     }
-      
+    
     clust_item_rated_m = NULL
     for(mov in 1:M){
       temp = clust_map[item_rated_m[[mov]],]
-      clust_item_rated_m[[mov]] = temp[temp[,2]==k,3]
+      clust_item_rated_m[[mov]] = temp[temp[,2]==k,1]
     }
     
+    #####################
+    # mu_u and Lambda_u #
+    #####################
     
+    #find sufficient stats first
+    U_mean = apply(U[users,],2,mean)
+    S = matrix(0,nrow = ncol(U),ncol = ncol(U))
+    for(n in users){
+      S = S + U[n,] %*% t(U[n,])
+    }
+    S = S/clust_N
     
-    # #####################
-    # # mu_u and Lambda_u #
-    # #####################
-    # 
-    # #find sufficient stats first
-    # U_mean = apply(U[users,],2,mean)
-    # S = matrix(0,nrow = ncol(U),ncol = ncol(U))
-    # for(n in users){
-    #   S = S + U[n,] %*% t(U[n,])
-    # }
-    # S = S/clust_N
-    # 
-    # #find full conditional parameters for mu_u and Lambda_u
-    # beta_star = beta_0 + clust_N
-    # v_star = v_0 + clust_N
-    # avg = (beta_0*mu_u0  + clust_N*U_mean)/(beta_star)
-    # W_0_star_inv = W_0_inv + clust_N*S + beta_0*clust_N/beta_star * (U_mean - mu_u0) %*% t((U_mean - mu_u0))
-    # W_0_star = solve(W_0_star_inv)
-    # 
-    # #draw Lambda_U first
-    # Lambda_U = rWishart(1,v_star,W_0_star)
-    # Lambda_U = Lambda_U[,,1]
-    # Lambda_U_inv = solve(Lambda_U)
-    # 
-    # #draw mu_u from its full conditional
-    # mu_u = chol(1/beta_star*Lambda_U_inv) %*% rnorm(D) + avg
+    #find full conditional parameters for mu_u and Lambda_u
+    beta_star = beta_0 + clust_N
+    v_star = v_0 + clust_N
+    avg = (beta_0*mu_u0  + clust_N*U_mean)/(beta_star)
+    W_0_star_inv = W_0_inv + clust_N*S + beta_0*clust_N/beta_star * (U_mean - mu_u0) %*% t((U_mean - mu_u0))
+    W_0_star = solve(W_0_star_inv)
     
-    # #####
-    # # U #
-    # #####
-    # 
-    # for(n in 1:N){
-    # 
-    #   #find sufficient stats
-    #   S = matrix(0,nrow = D, ncol = D)
-    # 
-    #   for(m in user_rated_n[[n]]){
-    #     S = S + V[m,] %*% t(V[m,])
-    #   }
-    # 
-    #   s = rep(0,D)
-    #   for(m in user_rated_n[[n]]){
-    #     s = s + V[m,]*(R_nm[n,m])
-    #   }
-    #   #maybe I should rename them becaue S and s are similar..
-    # 
-    #   #find variance and mean for normal
-    #   covar = Lambda_U + alpha*S
-    #   covar_inv = solve(covar)
-    #   avg = covar_inv%*%(alpha*s + Lambda_U %*% mu_u )
-    # 
-    #   #draw U_n
-    #   U[n,] = chol(covar_inv) %*% rnorm(D) + avg
-    # }
+    #draw Lambda_U first
+    Lambda_U = rWishart(1,v_star,W_0_star)
+    Lambda_U = Lambda_U[,,1]
+    Lambda_U_inv = solve(Lambda_U)
     
-    # #####################
-    # # mu_v and Lambda_v #
-    # #####################
-    # 
-    # #find sufficient stats first
-    # V_mean = apply(V,2,mean)
-    # S = matrix(0,nrow = ncol(V),ncol = ncol(V))
-    # for(m in 1:M){
-    #   S = S + V[m,] %*% t(V[m,])
-    # }
-    # S = S/M
-    # 
-    # #find full conditional parameters for mu_u and Lambda_u
-    # beta_star = beta_0 + M
-    # v_star = v_0 + M
-    # avg = (beta_0*mu_u0  + M*V_mean)/(beta_star)
-    # W_0_star_inv = W_0_inv + M*S + beta_0*M/beta_star * (mu_v0 - V_mean) %*% t((mu_v0 - V_mean))
-    # W_0_star = solve(W_0_star_inv)
-    # 
-    # #draw Lambda_V first
-    # Lambda_V = rWishart(1,v_star,W_0_star)
-    # Lambda_V = Lambda_V[,,1]
-    # Lambda_V_inv = solve(Lambda_V)
-    # 
-    # #initiailze mu_v at random
-    # mu_v = chol(1/beta_star*Lambda_V_inv) %*% rnorm(D) + avg
+    #draw mu_u from its full conditional
+    mu_u = chol(1/beta_star*Lambda_U_inv) %*% rnorm(D) + avg
     
-    #V updating is broken?
+    #####
+    # U #
+    #####
+    
+    for(n in 1:N){
+      
+      #find sufficient stats
+      S = matrix(0,nrow = D, ncol = D)
+      
+      for(m in user_rated_n[[n]]){
+        S = S + V[m,] %*% t(V[m,])
+      }
+      
+      s = rep(0,D)
+      for(m in user_rated_n[[n]]){
+        s = s + V[m,]*(R_nm[n,m])
+      }
+      #maybe I should rename them becaue S and s are similar..
+      
+      #find variance and mean for normal
+      covar = Lambda_U + alpha*S
+      covar_inv = solve(covar)
+      avg = covar_inv%*%(alpha*s + Lambda_U %*% mu_u )
+      
+      #draw U_n
+      U[n,] = chol(covar_inv) %*% rnorm(D) + avg
+    }
+    
+    #####################
+    # mu_v and Lambda_v #
+    #####################
+    
+    #find sufficient stats first
+    V_mean = apply(V,2,mean)
+    S = matrix(0,nrow = ncol(V),ncol = ncol(V))
+    for(m in 1:M){
+      S = S + V[m,] %*% t(V[m,])
+    }
+    S = S/M
+    
+    #find full conditional parameters for mu_u and Lambda_u
+    beta_star = beta_0 + M
+    v_star = v_0 + M
+    avg = (beta_0*mu_u0  + M*V_mean)/(beta_star)
+    W_0_star_inv = W_0_inv + M*S + beta_0*M/beta_star * (mu_v0 - V_mean) %*% t((mu_v0 - V_mean))
+    W_0_star = solve(W_0_star_inv)
+    
+    #draw Lambda_V first
+    Lambda_V = rWishart(1,v_star,W_0_star)
+    Lambda_V = Lambda_V[,,1]
+    Lambda_V_inv = solve(Lambda_V)
+    
+    #initiailze mu_v at random
+    mu_v = chol(1/beta_star*Lambda_V_inv) %*% rnorm(D) + avg
+    
     #####
     # V #
     #####
-
+    
     for(m in 1:M){
-
+      
       #find sufficient stats
       S = matrix(0,nrow = D, ncol = D)
       for(n in clust_item_rated_m[[m]]){
         S = S + U[n,] %*% t(U[n,])
       }
-
+      
       s = rep(0,D)
       for(n in clust_item_rated_m[[m]]){
         s = s + U[n,]*(R_nm[n,m])
       }
       #maybe I should rename them becaue S and s are similar..
-
+      
       #find variance and mean for normal
       covar = Lambda_V + alpha*S
       covar_inv = solve(covar)
       avg = covar_inv%*%(alpha*s + Lambda_V %*% mu_v )
-
+      
       #draw V_m
       V[m,] = chol(covar_inv) %*% rnorm(D) + avg
     }
@@ -473,7 +470,7 @@ for(it in 1:n_it){
     #record mu_v
     chain_mu_v_kid[,it-warmup,] = mu_v_kd[,]
     
-
+    
     for(k in 1:K){
       #record U
       chain_U_k_ind[[k]][it-warmup,,] = U_knd[k,,]
@@ -500,8 +497,12 @@ for(k in 1:K){
 
 
 #z_n
-post_z_n = apply(chain_z_in,2,mean)
-plot(true_z_u,post_z_n)
+post_z_nk = matrix(0,nrow = N,ncol = K)
+for(n in 1:N){
+  for(k in 1:K){
+    post_z_nk[n,k] = length(which(chain_z_in[,n]==k))/length(chain_z_in[,n])
+  }
+}
 
 #posterior mean for p
 post_p_km = matrix(0,nrow = K, ncol = M)
@@ -563,11 +564,10 @@ matplot(chain_V_k_imd[[k]][,m,],type="l")
 #test how posterior means do on prediction on training set
 post_R_nm = matrix(0,nrow = N, ncol = M)
 for(n in 1:N){
-  k = z_n[n]
   for(m in user_rated_n[[n]]){
-    post_R_nm[n,m] = sum(post_U_k_nd[[k]][n,] * post_V_k_md[[k]][m,])
-    # post_R_nm[n,m] = sum(true_U_knd[k,n,] * post_V_k_md[[k]][m,])
-    # post_R_nm[n,m] = sum(true_U_knd[k,n,]* true_V_kmd[k,m,])
+    for(k in 1:K){
+      post_R_nm[n,m] = post_R_nm[n,m] + post_z_nk[n,k]*sum(post_U_k_nd[[k]][n,] * post_V_k_md[[k]][m,])
+    }
   }
 }
 R_nm = R_nm[which(I_nm>0)]

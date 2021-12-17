@@ -15,10 +15,12 @@ load("../Data Structures/train_I_nm.rda")
 
 #run the k-means algorithm for k = 2
 K = 2
-out = kmeans(train_I_nm,centers = K, nstart = 25)
+# out = kmeans(train_I_nm,centers = K, nstart = 25)
 
 #find the cluster ids
-clust_id = out$cluster
+# clust_id = out$cluster
+clust_id = c(rep(1,500),rep(2,500))
+
 # clust_id = rep(1,886)
 # 
 # #let's try on one cluster?
@@ -775,7 +777,7 @@ for(n in 1:N){
   k = clust_id[n]
   id = clust_map[n,3]
   for(m in user_rated_k_n[[k]][[id]]){
-    post_R_nm[n,m] = sum(post_U_k_nd[[k]][id,] * post_V_k_md[[k]][m,]) + mean_rating[[k]]
+    post_R_nm[n,m] = sum(post_U_k_nd[[k]][id,] * post_V_k_md[[k]][m,]) + mean_rating_k[[k]]
   }
 }
 R_nm = R_nm[which(I_nm>0)]

@@ -81,7 +81,7 @@ for(i in 1:nrow(V)){
 }
 
 #set number of iterations
-warmup = 3000
+warmup = 1000
 iterations = 1000
 n_it = warmup + iterations
 

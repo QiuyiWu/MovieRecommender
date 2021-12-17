@@ -18,17 +18,6 @@ lines(2:(length(MAE_vec)+1),MAE_vec, col = "green")
 legend(15, 0.95, legend=c("de-Mean","de-Med"),
        col=c("blue","green"), lty=c(1,1), cex=0.8)
 
-# 
-# #plot rMSE with Mean vs without Mean for 3k burnin its and 1k its
-# load("../Data Structures/4k_it_rMSE_vec.rda")
-# plot(2:(length(rMSE_vec)+1),rMSE_vec, type= "l",col = "red",
-#      xlab = "D",ylab = "rMSE")
-# load("../Data Structures/4k_it_demean_kmean_rMSE_vec.rda")
-# lines(2:(length(rMSE_vec)+1),MAE_vec, col = "blue")
-# legend(39, 3.5, legend=c("Standard", "de-Mean"),
-#        col=c("red", "blue"), lty=c(1,1), cex=0.8)
-
-
 #plot MAE for BPMF as D changes with 3k burnin its and 1k its
 load("../Data Structures/4k_it_demean_MAE_vec.rda")
 plot(2:(length(MAE_vec)+1),MAE_vec, type= "l",col = "red",
@@ -56,5 +45,35 @@ lines(2:(length(MAE_vec)+1),MAE_vec,col="blue",type="l")
 load("../Data Structures/CF_MAE.rda")
 abline(h = MAE)
 
-load("../Data Structures/kMAE_vec.rda")
+############
+# BBMMBPMF #
+############
 
+#first plot MAE from regular demeaned BPMF
+load("../Data Structures/4k_it_demean_MAE_vec.rda")
+plot(2:(length(MAE_vec)+1),MAE_vec, type = "l",
+     col = "red", ylim = c(0.85,1),
+     xlab = "D",ylab = "MAE")
+#plot MAE from demeaned BBMMBPMF
+load("../Data Structures/4k_it_demean_BBMMBPMF_MAE_vec.rda")
+lines(2:(length(MAE_vec)+1),MAE_vec, col = "blue")
+#plot MAE from kmean BPMF
+load("../Data Structures/4k_it_demean_kmean_MAE_vec.rda")
+lines(2:(length(MAE_vec)+1),MAE_vec, col = "green")
+#plot MAE from kmean BPMF with fake cluster
+load("../Data Structures/4k_it_demean_K_2_rand_BPMF_MAE_vec.rda")
+lines(2:(length(MAE_vec)+1),MAE_vec, col = "black")
+legend(30, 0.92, legend=c("demeaned BPMF", "demeaned BBMM BPMF", "demeaned kBPMF","demeaned kBPMF fake clusters"),
+       col=c("red", "blue","green","black"), lty=c(1,1,1,1), cex=0.8)
+
+#examine z
+load("../Data Structures/post_z.rda")
+matplot(t(z_mat),type="l")
+
+
+#examine BBMM split on different random seeds
+load("../Data Structures/phi_mat.rda")
+for(j in 1:ncol(phi_mat)){
+        phi_mat[,j] = sort(phi_mat[,j])
+}
+matplot(t(phi_mat),type="l")

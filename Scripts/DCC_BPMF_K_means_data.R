@@ -15,10 +15,11 @@ load("train_I_nm.rda")
 
 #run the k-means algorithm for k = 2
 K = 2
-out = kmeans(train_I_nm,centers = K, nstart = 25)
+# out = kmeans(train_I_nm,centers = K, nstart = 25)
 
 #find the cluster ids
-clust_id = out$cluster
+# clust_id = out$cluster
+clust_id = c(rep(1,500),rep(2,500))
 
 #create a map from global ID to cluster ID
 clust_map = matrix(0,nrow = N,ncol = 3)
