@@ -8,7 +8,7 @@ set.seed(1)
 #######################
 
 #Set the number of clusters
-K = 5
+K = 2
 #set alpha
 alpha = 1
 #set a
@@ -21,11 +21,20 @@ b = 1
 # load Data #
 #############
 
-load("../Data Structures/cluster_mat.rda")
+load("../Data Structures/rat_mat.rda")
+train_I_nm = rat_mat
+train_I_nm[train_I_nm>0] = 1
+
+# load("../Data Structures/train_I_nm.rda")
+# load("../Data Structures/cluster_mat.rda")
 #rename cluster_mat
-y_nm = cluster_mat
+y_nm = train_I_nm
+# y_nm = cluster_mat
 #remove for memory
-rm(cluster_mat)
+rm(rat_mat)
+rm(train_I_nm)
+# rm(cluster_mat)
+
 
 #recover the number of users
 N = nrow(y_nm)
