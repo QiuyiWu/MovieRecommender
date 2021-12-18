@@ -140,15 +140,15 @@ M_m = true_M_m
 #initialize psi_kl at truth
 psi_kl = true_psi_kl
 
-#initialzie W_nm at random
-W_nm = matrix(0,nrow = N,ncol = M)
-for(n in 1:N){
-  for(m in 1:M){
-    W_nm[n,m] = sample(0:1,1)
-  }
-}
-# #initailize W_nm at truth
-# W_nm = true_W_nm
+# #initialzie W_nm at random
+# W_nm = matrix(0,nrow = N,ncol = M)
+# for(n in 1:N){
+#   for(m in 1:M){
+#     W_nm[n,m] = sample(0:1,1)
+#   }
+# }
+#initailize W_nm at truth
+W_nm = true_W_nm
 
 
 #initialize p_kl at truth
@@ -170,17 +170,16 @@ for(l in 1:L){
 
 #find the number of each user-movie combo
 num_tot_kl = matrix(0,nrow = K,ncol = L)
+num_W_kl = matrix(0,nrow = K,ncol = L)
+num_WI_kl = matrix(0,nrow = K,ncol = L)
 for(n in 1:N){
   for(m in 1:M){
     num_tot_kl[U_n[n],M_m[m]] = num_tot_kl[U_n[n],M_m[m]] + 1
-  }
-}
-num_W_kl = matrix(0,nrow = K,ncol = L)
-for(n in 1:N){
-  for(m in 1:M){
     num_W_kl[U_n[n],M_m[m]] = num_W_kl[U_n[n],M_m[m]] + W_nm[n,m]
+    num_WI_kl[U_n[n],M_m[m]] = num_WI_kl[U_n[n],M_m[m]] + W_nm[n,m]*I_nm[n,m]
   }
 }
+
 
 #set number of iterations
 warmup = 1000
@@ -194,6 +193,7 @@ chain_theta_il = matrix(0,nrow = iterations, ncol = L)
 chain_m_im = matrix(0,nrow = iterations,ncol = M)
 chain_psi_ikl = array(0,dim=c(iterations,K,L))
 chain_W_inm = array(0,dim=c(iterations,N,M))
+chain_p_ikl = array(0,dim = c(iterations,K,L))
 
 #################
 # Gibbs Sampler #
@@ -276,30 +276,8 @@ for(it in 1:n_it){
   #   #re-increment count
   #   num_m_l[new_l] = num_m_l[new_l] + 1
   # }
-  # 
-  # ##########
-  # # psi_kl #
-  # ##########
-  # #recalculate counts (maybe this could be faster?)
-  # num_tot_kl = matrix(0,nrow = K,ncol = L)
-  # for(n in 1:N){
-  #   for(m in 1:M){
-  #     num_tot_kl[U_n[n],M_m[m]] = num_tot_kl[U_n[n],M_m[m]] + 1
-  #   }
-  # }
-  # num_W_kl = matrix(0,nrow = K,ncol = L)
-  # for(n in 1:N){
-  #   for(m in 1:M){
-  #     num_W_kl[U_n[n],M_m[m]] = num_W_kl[U_n[n],M_m[m]] + W_nm[n,m]
-  #   }
-  # }
-  # #sample from full conditional
-  # for(k in 1:K){
-  #   for(l in 1:L){
-  #     psi_kl[k,l] = rbeta(1,a + num_W_kl[k,l],b + num_tot_kl[k,l] - num_W_kl[k,l])
-  #   }
-  # }
-  
+
+
   ########
   # W_nm #
   ########
@@ -316,6 +294,38 @@ for(it in 1:n_it){
       }
     }
   }
+
+
+  ##########
+  # psi_kl #
+  ##########
+  #recalculate counts (maybe this could be faster?)
+  num_tot_kl = matrix(0,nrow = K,ncol = L)
+  num_W_kl = matrix(0,nrow = K,ncol = L)
+  num_WI_kl = matrix(0,nrow = K,ncol = L)
+  for(n in 1:N){
+    for(m in 1:M){
+      num_tot_kl[U_n[n],M_m[m]] = num_tot_kl[U_n[n],M_m[m]] + 1
+      num_W_kl[U_n[n],M_m[m]] = num_W_kl[U_n[n],M_m[m]] + W_nm[n,m]
+      num_WI_kl[U_n[n],M_m[m]] = num_WI_kl[U_n[n],M_m[m]] + W_nm[n,m]*I_nm[n,m]
+    }
+  }
+  # #sample from full conditional
+  # for(k in 1:K){
+  #   for(l in 1:L){
+  #     psi_kl[k,l] = rbeta(1,a + num_W_kl[k,l],b + num_tot_kl[k,l] - num_W_kl[k,l])
+  #   }
+  # }
+
+  ########
+  # p_kl #
+  ########
+  for(k in 1:K){
+    for(l in 1:L){
+      p_kl[k,l] = rbeta(1,c + num_WI_kl[k,l],d + num_W_kl[k,l] - num_WI_kl[k,l])
+    }
+  }
+  
   
   ##########
   # Record #
@@ -338,6 +348,9 @@ for(it in 1:n_it){
     
     #record W_nm
     chain_W_inm[it-warmup,,] = W_nm
+    
+    #record p_kl
+    chain_p_ikl[it-warmup,,] = p_kl
   }
   
   print(it)
@@ -384,3 +397,13 @@ for(n in 1:N){
   }
 }
 plot(true_W_nm,post_W_nm)
+
+#p_kl
+post_p_kl = matrix(0,nrow = K,ncol = L)
+for(k in 1:K){
+  for(l in 1:L){
+    post_p_kl[k,l] = mean(chain_p_ikl[,k,l])
+  }
+}
+plot(true_p_kl,post_p_kl,
+     xlim = c(0,1),ylim = c(0,1))
