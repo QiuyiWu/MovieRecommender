@@ -8,7 +8,7 @@ ratings = read.csv("../../Data/ratings.csv")
 userIDs = ratings$userId
 
 #find rows corresponding to a subset of users
-users = 1:2000
+users = 1:1000
 user_rows = NULL
 for(i in 1:length(users)){
   user_rows = c(user_rows,which(userIDs == users[i]))
