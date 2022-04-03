@@ -1,0 +1,14 @@
+name: comp_ad_content
+channels:
+  - defaults
+dependencies:
+  - pip
+  - python=3.8.10
+  - pandas
+  - numpy
+  - scipy
+  - seaborn
+  - matplotlib
+  - scikit-learn
+  - tqdm
+  - jupyterlab

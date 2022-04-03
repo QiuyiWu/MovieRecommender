@@ -2,3 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# python large dataset and model, defer it to google drive
+*.feather
+*.joblib
+
+# python and virtual env specific
+.pytest_cache/
+__pycache__/
+.env/
+env/
