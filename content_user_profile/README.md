@@ -3,18 +3,7 @@
 
 ### Problem Formulation and Data Pipeline
 
-Here we have three entities, user $U$, movie $M$, and rating $R$. Any user can rate any arbitrary number of movies; therefore, the amount of ratings $|\{R\}|$ we have is $|\{U \times M\}|$ which is around 25M.
-
-We constructed a movie profile based on the given 1,128 tag genome scores, $d=1128$, and some preprocessing. Namely, we write a movie profile $\vec{M} \in \mathbb{R}^d$ with TF-IDF transformation as below.
-$$ \vec{M_i} = tfidf(M_i, \{M\}) $$
-
-And the user profile is constructed as follow.
-$$ \vec{U}(U, \{M_j | U\}) = \frac{\sum_{j}^{|\{M_j | U\}|} {R(U, M_j) \cdot \vec{M_j}}} {\sum_{j}^{|\{M_j | U\}|} {R(U, M_j)}}$$
-Despite the ugly notation above, in essence, every user profile is a normalized weighted sum of all the movies that a user had rated in the pasted. The weights are chosen as the ratings of this user gave to all the movies.
-
-Lastly, the model is trying to predict the new rating given a user profile and a movie profile,
-$$ <\vec{U}, \vec{M}> \Rightarrow R(U, M) $$
-where $ <\vec{U}, \vec{M}> $ is a feature vector that is $\in \mathbb{R}^{2d}$.
+Please see details in `run model.ipynb` Jupyter notebook.
 
 ---
 
@@ -62,7 +51,7 @@ You will need to use pandas and pyarrow to read them like `pd.read_feather(file_
 - `feature_profile.feather`: this is the user profile dataset
     - User profile is constructed based on movies profiles for each specific user.
     To create a train/test set, we have to do this separately to prevent the model from seeing test data during training. Because the user profile is an aggregation of all the movies a user has seen so far, we should not include some movies into the training set because they have not seen them yet.
-    - User profile feature array should be the same size as any movie profile feature array. In this case, it is a vector with size $\mathbb{R}^{1128}$
+    - User profile feature array should be the same size as any movie profile feature array. In this case, it is a vector with size `d = 1128`
     - Columns [userId: Int, train: Array[Float], test: Array[Float]]
 - `model_sgd_regressor.joblib`: this is the `joblib` binary of the model from `sklearn`
 - `model_sgd_regressor_scores.feather`: and here contains all the training and RMSE history
