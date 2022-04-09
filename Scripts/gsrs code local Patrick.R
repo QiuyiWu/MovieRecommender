@@ -33,6 +33,7 @@ test.data=ratings2[test.row,1:3]
 # Call gssvd function
 start_time <- Sys.time()
 a = gssvd(train=train.data, test=test.data, B=B, C=C, K=K,
+          tol_1 = tol_1, tol_2 = tol_2,
           lambda=lambda, max_iter=max_iter, verbose=1)
 end_time <- Sys.time()
 end_time - start_time
