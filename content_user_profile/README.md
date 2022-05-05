@@ -1,7 +1,7 @@
 ## Content-based Movie Recommendation System using User Profiles
 ----
 
-### Problem Formulation and Data Pipeline
+### Running and Using the model
 
 Please see details in `run model.ipynb` Jupyter notebook.
 
@@ -40,15 +40,15 @@ We have, in total, three `.feather` binary files. The final training and testing
 
 Here are the files and their documentation.
 You will need to use pandas and pyarrow to read them like `pd.read_feather(file_name)`
-- `feature_hist.feather`: it contains all the rating data from MovieLens 25M.
+- `user_hist.feather`: it contains all the rating data from MovieLens 25M.
     - The `is_train` label is used to enforce reproducibility and prevent test data from creeping into the training set.
     - In addition, here, we only select movie ratings with tag genome features.
     - Columns: [userId: Int, movieId: Int, rating: Int, is_train: Boolean]
-- `feature_movies.feather`: here, we have genome features for each movie. Or you can think of them as movie profiles.
+- `movie_profiles.feather`: here, we have genome features for each movie. Or you can think of them as movie profiles.
     - Tag genome is a dense matrix that is 100% filled for each movie and consists of 1,128 different tags.
     - We preprocessed the genome score with TF-IDF and scaled it up by 100x to prevent precision error before constructing this dataset.
     - Columns [movieId: Int, genome: Array[Float]]
-- `feature_profile.feather`: this is the user profile dataset
+- `user_profiles.feather`: this is the user profile dataset
     - User profile is constructed based on movies profiles for each specific user.
     To create a train/test set, we have to do this separately to prevent the model from seeing test data during training. Because the user profile is an aggregation of all the movies a user has seen so far, we should not include some movies into the training set because they have not seen them yet.
     - User profile feature array should be the same size as any movie profile feature array. In this case, it is a vector with size `d = 1128`
