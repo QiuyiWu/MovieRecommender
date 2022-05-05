@@ -4,7 +4,6 @@ Module that handls the reading
 import pandas as pd
 import numpy as np
 
-from tqdm import tqdm
 from functools import lru_cache
 
 class ContentBasedModelPipeline:
@@ -25,24 +24,40 @@ class ContentBasedModelPipeline:
         return pd.read_feather('./data/user_profiles.feather').set_index('userId')
 
     def get_user_train_test(self, user_id):
-        user_hist = self.user_hist().loc[[user_id]]
-        user_profile = self.user_profiles().loc[[user_id]]
-        movie_features = self.movie_features()
-        
-        data = user_hist.join(user_profile).join(movie_features)
-        return data, self._get_train_test(data)
+        def calc_feature(user_profile, movie_profile):
+            if user_profile is not None:
+                x = np.r_[user_profile, movie_profile]
+                x /= np.linalg.norm(x)
+            else:
+                x = None
+            return x
+
+        user_profiles = self.user_profiles().loc[user_id]
+        user_hist = self.user_hist().loc[user_id]
+        data = self.movie_features().copy()
+
+        # add in avaliable ratings
+        data['rating'] = user_hist['rating']
+
+        # construct features for train and test
+        train, test = {}, {}
+        for movieId, genome in data.genome.iteritems():
+            train[movieId] = calc_feature(user_profiles.train, genome)
+            test[movieId] = calc_feature(user_profiles.test, genome)
+
+        data['train'] = pd.Series(train)
+        data['test'] = pd.Series(test)
+        return data
 
     def get_batch_train_test(self, batch_size=5000):
+        """Constructing the finalized dataset for model"""
         hist = self.user_hist()
         user_profiles = self.user_profiles()
         movie_features = self.movie_features()
 
-        sample = hist.sample(batch_size, random_state=self.rng)
-        sample = sample.join(user_profiles).join(movie_features)
-        return sample, self._get_train_test(sample)
+        data = hist.sample(batch_size, random_state=self.rng)
+        data = data.join(user_profiles).join(movie_features)
 
-    def _get_train_test(self, data):
-        """Constructing the finalized dataset for model"""
         # concate user profile and movie genome features to one
         # normalize each row, so that euclidean distance emulate cosine distance ordering
         has_train, has_test = True, True
