@@ -12,3 +12,8 @@
 __pycache__/
 .env/
 env/
+
+# R related
+dist_mat.rda
+BBMM_out.rda
+*.Rproj

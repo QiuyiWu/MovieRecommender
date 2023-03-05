@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Feb 20 10:12:09 2022
+Origin: https://github.com/fuhailin/Probabilistic-Matrix-Factorization
 
 @author: mingy
 """
