@@ -8,7 +8,7 @@ library(vegan)#isomap library
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)
@@ -30,7 +30,7 @@ min(num_train)
 # we may need to adjust this process to guarantee training set size on a per-user basis
 
 #load the tag matrix
-load("../Data Structures/tag_mat.rda")
+load("../data/tag_mat.rda")
 
 #make dataframe for training set
 response = NULL

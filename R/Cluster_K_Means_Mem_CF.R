@@ -4,14 +4,14 @@ library(stats)
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)
 
 #load training and test sets
-load("../Data Structures/train_R_nm.rda")
-load("../Data Structures/test_R_nm.rda")
+load("../data/train_R_nm.rda")
+load("../data/test_R_nm.rda")
 #rename so it works with old code
 train_mat = train_R_nm
 test_mat = test_R_nm
@@ -25,7 +25,7 @@ sim = function(a,b){
 }
 
 #load the training cluster matrix
-load("../Data Structures/train_I_nm.rda")
+load("../data/train_I_nm.rda")
 #rename so it works with old code
 cluster_mat = train_I_nm
 #remove redundant data structures
@@ -165,4 +165,4 @@ percent_empty = num_empty/num_pred
 #global-average MAE is 0.926458
 #cluster-average MAE is 0.9260715- use this one?
 
-save(MAE,file = "../Data Structures/K_means_CF_MAE.rda")
+save(MAE,file = "../data/K_means_CF_MAE.rda")

@@ -70,4 +70,4 @@ gc()
 quantile(data$timestamp,0.75)
 
 #save list of users
-write.csv(users[1:i],file = "../Data Structures/Users.csv",row.names = FALSE)
+write.csv(users[1:i],file = "../data/Users.csv",row.names = FALSE)

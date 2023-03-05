@@ -1,4 +1,4 @@
-load("../Data Structures/Occ_out.rda")
+load("../data/Occ_out.rda")
 
 post_phi_k = Occ_out$post_phi
 post_U_n = Occ_out$post_U

@@ -2,7 +2,7 @@
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 N = nrow(rat_mat) #number of users
 M = ncol(rat_mat) #number of items
@@ -185,4 +185,4 @@ for(it in 1:n_it){
 BBMM_out = list(Chain_phi = chain_phi_ik,
                 Chain_z = chain_z_iu,
                 Chain_p = chain_p_ikm)
-save(BBMM_out, file = "../Data Structures/BBMM_out.rda")
+save(BBMM_out, file = "../data/BBMM_out.rda")

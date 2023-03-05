@@ -21,12 +21,12 @@ b = 1
 # load Data #
 #############
 
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 train_I_nm = rat_mat
 train_I_nm[train_I_nm>0] = 1
 
-# load("../Data Structures/train_I_nm.rda")
-# load("../Data Structures/cluster_mat.rda")
+# load("../data/train_I_nm.rda")
+# load("../data/cluster_mat.rda")
 #rename cluster_mat
 y_nm = train_I_nm
 # y_nm = cluster_mat
@@ -164,4 +164,4 @@ for(it in 1:n_it){
 BBMM_out = list(Chain_phi = chain_phi_ik,
                 Chain_z = chain_z_iu,
                 Chain_p = chain_p_ikm)
-save(BBMM_out, file = "../Data Structures/BBMM_out.rda")
+save(BBMM_out, file = "../data/BBMM_out.rda")

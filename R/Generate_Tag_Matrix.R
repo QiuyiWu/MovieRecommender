@@ -9,7 +9,7 @@
 genome = read.csv("../../Data/genome-scores.csv")
 
 #load the ratings matrix to find the movies we want for this batch of users
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 movies = strtoi(colnames(rat_mat))
 
 #remove unnecessary data structures
@@ -32,4 +32,4 @@ for(i in 1:num_mov){
 rownames(tag_mat) = movies
 
 #save the tag matrix for future use
-save(tag_mat,file="../Data Structures/tag_mat.rda")
+save(tag_mat,file="../data/tag_mat.rda")

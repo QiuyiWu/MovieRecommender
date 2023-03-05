@@ -4,14 +4,14 @@
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)
 
 #load training and test sets
-load("../Data Structures/train_R_nm.rda")
-load("../Data Structures/test_R_nm.rda")
+load("../data/train_R_nm.rda")
+load("../data/test_R_nm.rda")
 #rename so it works with old code
 train_mat = train_R_nm
 test_mat = test_R_nm
@@ -102,4 +102,4 @@ percent_empty = num_empty/num_pred
 #if we imput for user mean then we have 0.9543072
 #if we use the global mean then the MAE is 0.953949 - probably recommend this?
 
-save(MAE,file = "../Data Structures/CF_MAE.rda")
+save(MAE,file = "../data/CF_MAE.rda")

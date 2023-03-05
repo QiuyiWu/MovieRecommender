@@ -27,7 +27,7 @@ b = 1
 
 #load I_nm
 #load training set
-load("../Data Structures/train_I_nm.rda")
+load("../data/train_I_nm.rda")
 I_nm = train_I_nm
 
 # #remove movies which aren't observed
@@ -58,7 +58,7 @@ for(m in 1:M){
 #################
 
 #load training set
-load("../Data Structures/train_R_nm.rda")
+load("../data/train_R_nm.rda")
 R_nm = train_R_nm
 rm(train_R_nm)
 
@@ -525,7 +525,7 @@ plot(R_nm[], post_R_nm[])
 # Test Set Prediction #
 #######################
 
-load("../Data Structures/test_R_nm.rda")
+load("../data/test_R_nm.rda")
 #rename for cooperation with old code
 R_nm = test_R_nm
 
@@ -533,7 +533,7 @@ R_nm = test_R_nm
 rm(test_R_nm)
 
 #load cluster_mat
-load("../Data Structures/test_I_nm.rda")
+load("../data/test_I_nm.rda")
 
 #rename for cooperation with old code
 I_nm = test_I_nm

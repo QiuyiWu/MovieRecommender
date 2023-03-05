@@ -4,7 +4,7 @@
   set.seed(1)
   
   #load training set
-  load("../Data Structures/train_R_nm.rda")
+  load("../data/train_R_nm.rda")
   #rename for cooperation with old code
   R_nm = train_R_nm
   
@@ -16,7 +16,7 @@
   rm(train_R_nm)
   
   #load cluster_mat
-  load("../Data Structures/train_I_nm.rda")
+  load("../data/train_I_nm.rda")
   
   #rename for cooperation with old code
   I_nm = train_I_nm 
@@ -301,7 +301,7 @@
   # test set prediction #
   #######################
   
-  load("../Data Structures/test_R_nm.rda")
+  load("../data/test_R_nm.rda")
   #rename for cooperation with old code
   R_nm = test_R_nm
   
@@ -309,7 +309,7 @@
   rm(test_R_nm)
   
   #load cluster_mat
-  load("../Data Structures/test_I_nm.rda")
+  load("../data/test_I_nm.rda")
   
   #rename for cooperation with old code
   I_nm = test_I_nm 

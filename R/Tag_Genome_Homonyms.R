@@ -69,7 +69,7 @@ homonyms[[63]] = c(1112,1113) #witch, witches
 homonyms[[64]] = c(1121,1126) #world war ii, wwii
 homonyms[[65]] = c(1127,1128) #zombie, zombies
 
-load("../Data Structures/tag_mat.rda")
+load("../data/tag_mat.rda")
 
 cor_vec = NULL
 for(i in 1:length(homonyms)){

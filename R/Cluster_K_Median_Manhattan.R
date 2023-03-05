@@ -5,7 +5,7 @@ library(cluster)
 library(factoextra)
 
 #load the cluster matrix
-load("../Data Structures/cluster_mat.rda")
+load("../data/cluster_mat.rda")
 
 #find within sum of squares for a varying number of clusters
 clusters = 2:25 #the number of clusters to attempt

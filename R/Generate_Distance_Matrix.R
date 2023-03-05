@@ -2,7 +2,7 @@
 #isomap reduced space
 
 #load the isomap reduced space
-load("../Data Structures/iso_points.rda")
+load("../data/iso_points.rda")
 
 #compute the distance between all movies
 #Standard Euclidean distance in R^n
@@ -15,12 +15,12 @@ for(i in 1:nrow(dist_mat)){
 }
 
 #save the distance matrix
-save(dist_mat,file="../Data Structures/dist_mat.rda")
+save(dist_mat,file="../data/dist_mat.rda")
 
 # this part calculates the distance matrix in unreduced tag genome space
 # 
 # #load the isomap reduced space
-# load("../Data Structures/tag_mat.rda")
+# load("../data/tag_mat.rda")
 # 
 # #compute the distance between all movies
 # #Standard Euclidean distance in R^n
@@ -33,4 +33,4 @@ save(dist_mat,file="../Data Structures/dist_mat.rda")
 # }
 # 
 # #save the distance matrix
-# save(dist_mat,file="../Data Structures/dist_mat.rda")
+# save(dist_mat,file="../data/dist_mat.rda")

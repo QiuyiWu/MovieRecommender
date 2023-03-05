@@ -7,7 +7,7 @@
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 num_user = nrow(rat_mat)
 num_item = ncol(rat_mat)

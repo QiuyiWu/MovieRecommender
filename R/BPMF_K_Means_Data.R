@@ -4,14 +4,14 @@ library(stats)
 set.seed(1234)
 
 #load training set
-load("../Data Structures/train_R_nm.rda")
+load("../data/train_R_nm.rda")
 
 #recover the number of users and items
 N = nrow(train_R_nm) #number of users
 M = ncol(train_R_nm) #number of items
 
 #load the training cluster matrix
-load("../Data Structures/train_I_nm.rda")
+load("../data/train_I_nm.rda")
 
 #run the k-means algorithm for k = 2
 K = 2
@@ -315,7 +315,7 @@ clust_id = c(rep(1,500),rep(2,500))
 # # test set prediction #
 # #######################
 # 
-# load("../Data Structures/test_R_nm.rda")
+# load("../data/test_R_nm.rda")
 # #rename for cooperation with old code
 # R_nm = test_R_nm[which(clust_id==2),]
 # 
@@ -323,7 +323,7 @@ clust_id = c(rep(1,500),rep(2,500))
 # rm(test_R_nm)
 # 
 # #load cluster_mat
-# load("../Data Structures/test_I_nm.rda")
+# load("../data/test_I_nm.rda")
 # 
 # #rename for cooperation with old code
 # I_nm = test_I_nm[which(clust_id==2),]
@@ -758,7 +758,7 @@ post_V_k_md[[K+1]] = NULL
 matplot(chain_V_k_imd[[k]][,n,],type="l")
 
 #load training set
-load("../Data Structures/train_R_nm.rda")
+load("../data/train_R_nm.rda")
 
 #recover the number of users and items
 N = nrow(train_R_nm) #number of users
@@ -767,7 +767,7 @@ M = ncol(train_R_nm) #number of items
 R_nm = train_R_nm
 
 #load the training cluster matrix
-load("../Data Structures/train_I_nm.rda")
+load("../data/train_I_nm.rda")
 
 I_nm = train_I_nm
 
@@ -788,7 +788,7 @@ plot(R_nm[], post_R_nm[])
 # test set prediction #
 #######################
 
-load("../Data Structures/test_R_nm.rda")
+load("../data/test_R_nm.rda")
 #rename for cooperation with old code
 R_nm = test_R_nm
 
@@ -796,7 +796,7 @@ R_nm = test_R_nm
 rm(test_R_nm)
 
 #load cluster_mat
-load("../Data Structures/test_I_nm.rda")
+load("../data/test_I_nm.rda")
 
 #rename for cooperation with old code
 I_nm = test_I_nm

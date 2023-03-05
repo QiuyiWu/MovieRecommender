@@ -5,7 +5,7 @@ library(stats)
 set.seed(1)
 
 #load cluster_mat
-# load("../Data Structures/cluster_mat.rda")
+# load("../data/cluster_mat.rda")
 
 #rename to indicator functions
 # I_nm = cluster_mat[,] #subset for time...

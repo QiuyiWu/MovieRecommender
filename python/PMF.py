@@ -157,7 +157,7 @@ class PMF(object):
         return precision_acc / len(inv_lst), recall_acc / len(inv_lst)
 
 #%% Load Data Function
-def load_rating_data(folder_path='D:/PhD/Recommender System/PMF/ml-25m/'):
+def load_rating_data(folder_path='../data/ml-25m/'):
     """
     load movie lens 25m ratings from original rating file.
     """
@@ -189,7 +189,7 @@ def spilt_rating_dat(data, size=0.2):
 
 #%% Run Selected Dataset with 24,674,113 entries
 if __name__ == "__main__":
-    folder_path='D:/PhD/Recommender System/PMF/ml-25m/'
+    folder_path='../data/ml-25m/'
     pmf = PMF()
     pmf.set_params({"num_feat": 10, "epsilon": 1, "_lambda": 0.01, "momentum": 0.8, "maxepoch": 50, "num_batches": 2500,
                     "batch_size": 1000})
@@ -208,5 +208,3 @@ if __name__ == "__main__":
     plt.grid()
     plt.show()
     print("precision_acc,recall_acc:" + str(pmf.topK(test)))
-
-#%% 

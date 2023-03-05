@@ -5,7 +5,7 @@
 set.seed(1)
 
 #load a ratings matrix
-load("../Data Structures/rat_mat.rda")
+load("../data/rat_mat.rda")
 #recover the number of users and items
 N = nrow(rat_mat) #number of users
 M = ncol(rat_mat) #number of items
@@ -33,7 +33,7 @@ test_I_nm = test_R_nm
 test_I_nm[which(test_I_nm>0)] = 1
 
 #save files
-save(train_R_nm,file = "../Data Structures/train_R_nm.rda")
-save(test_R_nm,file = "../Data Structures/test_R_nm.rda")
-save(train_I_nm, file = "../Data Structures/train_I_nm.rda")
-save(test_I_nm, file = "../Data Structures/test_I_nm.rda")
+save(train_R_nm,file = "../data/train_R_nm.rda")
+save(test_R_nm,file = "../data/test_R_nm.rda")
+save(train_I_nm, file = "../data/train_I_nm.rda")
+save(test_I_nm, file = "../data/test_I_nm.rda")

@@ -57,4 +57,4 @@ rownames(rat_mat) = users
 colnames(rat_mat) = desired_movies
 
 #save the ratings matrix for future use
-save(rat_mat,file="../Data Structures/rat_mat.rda")
+save(rat_mat,file="../data/rat_mat.rda")
